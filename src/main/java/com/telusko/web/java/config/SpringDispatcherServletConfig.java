@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ComponentScan(basePackages = "com.telusko.web")
 @EnableWebMvc
-public class SpringServletConfig  implements WebMvcConfigurer {
+public class SpringDispatcherServletConfig  implements WebMvcConfigurer {
 	
 	
 	 @Override

@@ -13,22 +13,27 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
-//@Configuration
+import com.telusko.spring.security.CustomUserDetailService;
+
+@Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
-
+	@Autowired
+	CustomUserDetailService customUserDetailService;
 		
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .inMemoryAuthentication()
-                .withUser("user").password(passwordEncoder().encode("pass")).roles("USER")
-        		.and().withUser("admin").password(passwordEncoder().encode("pass")).roles("USER","ADMIN");
+		/* auth
+		    .inMemoryAuthentication()
+		        .withUser("user").password(passwordEncoder().encode("pass")).roles("USER")
+				.and().withUser("admin").password(passwordEncoder().encode("pass")).roles("USER","ADMIN");*/
+		auth.userDetailsService(customUserDetailService);
+		
     }
 	
 	protected void configure(HttpSecurity http) throws Exception {
 	    http.authorizeRequests()
-	    	.antMatchers("/static/**", "/about","/").permitAll()
+	    	.antMatchers("/static/**", "/about","/","/register").permitAll()
 	    	.antMatchers("/ghap").hasAnyRole("USER")
 	    	.antMatchers("/secure","/add").hasRole("ADMIN")
 	    	.anyRequest().authenticated()

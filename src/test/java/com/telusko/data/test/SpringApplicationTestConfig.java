@@ -1,4 +1,4 @@
-package com.telusko.web.java.config;
+package com.telusko.data.test;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -30,7 +30,7 @@ import com.telusko.spring.security.CustomUserDetailService;
 @ComponentScan(basePackageClasses = {CustomAuditorAware.class,CustomUserDetailService.class})
 @EnableJpaAuditing( auditorAwareRef = "customAuditorAware")
 
-public class SpringApplicationConfig {
+public class SpringApplicationTestConfig {
 	
 	@Bean
 	public DataSource dataSource() {
@@ -65,7 +65,24 @@ public class SpringApplicationConfig {
 		return transactionManager;
 	}
 	
+	/* 	This will start both H2 web console and TCP server in the same JVM as your embedded database so that
+	 	you can access port 8082 with your web browser , or access port 9092
+	  	with external SQL client such as SQuirreLSQL and view the same data. 
+	  
+		Then connect to it from your IDE with the following params (password - empty):
+		url: jdbc:h2:tcp://localhost:9092/mem:testdb  
+		user: sa */
 	
+	@Bean(initMethod = "start"  , destroyMethod = "stop")
+	public Server h2Server() throws SQLException {
+		return Server.createTcpServer("-tcp","-tcpAllowOthers","-tcpPort","9092");
+				
+	}
+	
+	@Bean(initMethod = "start",destroyMethod = "stop")
+	public Server h2WebServer() throws SQLException {
+		return Server.createWebServer("-web","-webAllowOthers","-webPort","8082" );
+	}
 	
 
 }
