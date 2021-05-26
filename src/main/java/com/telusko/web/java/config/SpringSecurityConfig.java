@@ -9,25 +9,31 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
+import com.telusko.spring.security.CustomAuthenticationProvider;
 import com.telusko.spring.security.CustomUserDetailService;
 
-@Configuration
+//@Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	CustomUserDetailService customUserDetailService;
+	
+	@Autowired
+	CustomAuthenticationProvider customAuthenticationProvider;
 		
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		/* auth
 		    .inMemoryAuthentication()
 		        .withUser("user").password(passwordEncoder().encode("pass")).roles("USER")
 				.and().withUser("admin").password(passwordEncoder().encode("pass")).roles("USER","ADMIN");*/
-		auth.userDetailsService(customUserDetailService);
+		/*auth.userDetailsService(customUserDetailService);*/
+		auth.authenticationProvider(customAuthenticationProvider);
 		
     }
 	
@@ -48,19 +54,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	        //.and().csrf().disable();
 	    
 		
-	}
-	
-	/*@Override
-	public void configure(WebSecurity web) throws Exception {
-	    web
-	        .ignoring()
-	        .antMatchers("/static/**", "/about","/");
-	}*/
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		
-	    return  NoOpPasswordEncoder.getInstance();
 	}
 	
 	

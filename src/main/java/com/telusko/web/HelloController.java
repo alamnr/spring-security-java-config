@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,6 +31,9 @@ public class HelloController {
 	
 	@Autowired
 	UserRepo userRepo;
+	
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@RequestMapping("/")
 	public String home() {
@@ -48,6 +52,7 @@ public class HelloController {
 	public String register(@ModelAttribute AppUser user) {
 		
 		user.setRole("USER");
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userRepo.save(user);
 		
 		Authentication auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),AuthorityUtils.createAuthorityList(user.getRole()));

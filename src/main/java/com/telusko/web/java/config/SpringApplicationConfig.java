@@ -18,16 +18,18 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.telusko.aop.CustomAuditorAware;
+import com.telusko.spring.security.CustomAuthenticationProvider;
 import com.telusko.spring.security.CustomUserDetailService;
 
 @Configuration
 @EnableJpaRepositories("com.telusko.domain")
 @EnableTransactionManagement
-@ComponentScan(basePackageClasses = {CustomAuditorAware.class,CustomUserDetailService.class})
+@ComponentScan(basePackageClasses = {CustomAuditorAware.class,CustomUserDetailService.class,CustomAuthenticationProvider.class})
 @EnableJpaAuditing( auditorAwareRef = "customAuditorAware")
 
 public class SpringApplicationConfig {
@@ -64,7 +66,13 @@ public class SpringApplicationConfig {
 		transactionManager.setEntityManagerFactory(entityManagerFactory());
 		return transactionManager;
 	}
-	
+
+
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		
+	    return  new BCryptPasswordEncoder();
+	}
 	
 	
 

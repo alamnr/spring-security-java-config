@@ -34,18 +34,7 @@ public class SpringDispatcherServletInitializer extends AbstractAnnotationConfig
 		return new Filter[] {new DelegatingFilterProxy("springSecurityFilterChain")};
 	}
 
-	/*@Override
-	protected Dynamic registerServletFilter(ServletContext servletContext, Filter filter) {
-		filter = new DelegatingFilterProxy("springSecurityFilterChain");		
-		Dynamic dynamic =  servletContext.addFilter("springSecurityFilterChain", filter);
-		//dynamic.addMappingForUrlPatterns(null, false, "/*");
-		return dynamic;
-	}*/
-
-	
-	
-	
-	
+		
 	
 
 }
