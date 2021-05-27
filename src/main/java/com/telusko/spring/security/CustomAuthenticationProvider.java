@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +27,12 @@ public class CustomAuthenticationProvider  implements AuthenticationProvider{
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 		AppUser user = userRepo.findByUsername(token.getName());
-		System.out.println(token.getCredentials().toString());
-		System.out.println(user.getPassword());
-		System.out.println(bCryptPasswordEncoder.matches(token.getCredentials().toString(),user.getPassword()));
+		
 		//if(user == null || !user.getPassword().equalsIgnoreCase(token.getCredentials().toString())) {
-		if(user == null || !bCryptPasswordEncoder.matches(token.getCredentials().toString(),user.getPassword())) {
+		if(user == null ) {
+			throw new UsernameNotFoundException(token.getName());
+		}
+		if(!bCryptPasswordEncoder.matches(token.getCredentials().toString(),user.getPassword())) {
 			throw new BadCredentialsException("bad credentials");
 		}
 		return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),AuthorityUtils.createAuthorityList(user.getRole()));
