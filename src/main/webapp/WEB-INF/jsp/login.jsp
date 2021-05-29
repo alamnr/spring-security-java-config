@@ -67,15 +67,20 @@
            <c:if  test="${ param.logout  != null }">
                 	<p>You have successfully been logged out.</p>
            </c:if> 
-           <c:url value="/login" var="loginVar"></c:url>
+           <c:url value="/dologin" var="loginVar"></c:url>
               <form class="well" action="${loginVar}" method="post" id="login" >
                 <div class="form-group">
-                  <label>Name</label>
-                  <input type="text" name="custom_name" class="form-control" placeholder="Enter Email">
+                  <label for="custom_username">Name</label>
+                  <input type="text" name="custom_username" class="form-control" placeholder="Enter Email">
                 </div>
                 <div class="form-group">
-                  <label>Password</label>
+                  <label  for="custom_password">Password</label>
                   <input type="password" name="custom_password" class="form-control" placeholder="Enter Password">
+                </div>
+                
+                <div class="form-group">
+                  <label for="make">Make</label>
+                  <input type="text" name="make" class="form-control" placeholder="Enter Make">
                 </div>
                 <sec:csrfInput/>
                
