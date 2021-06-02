@@ -39,17 +39,17 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		
-		auth.jdbcAuthentication().dataSource(dataSource);
+		auth.jdbcAuthentication().dataSource(dataSource)
 		/*.withDefaultSchema()
 		.withUser(User.withUsername("user").password(passwordEncoder.encode("pass")).roles("USER"))
 		.withUser(User.withUsername("admin").password(passwordEncoder.encode("pass")).roles("ADMIN"));*/
 		/* custom schema */
-		/*.usersByUsernameQuery("select email,password,enabled "
+		.usersByUsernameQuery("select email,password,enabled "
 		        + "from users "
 		        + "where email = ?")
-		      .authoritiesByUsernameQuery("select email,authority "
+		.authoritiesByUsernameQuery("select email,authority "
 		        + "from authorities "
-		        + "where email = ?");*/
+		        + "where email = ?");
 		
     }
 	

@@ -5,7 +5,7 @@ drop table if exists authorities cascade;
 
 /* default schema */
 
-
+/*
 create table users(
 	username varchar_ignorecase(50) not null primary key,
 	password varchar_ignorecase(50) not null,
@@ -24,12 +24,12 @@ insert into users (username,password,enabled) values ('admin','pass',1);
 insert into authorities (username, authority) values ('user','ROLE_USER');
 insert into authorities (username, authority) values ('admin','ROLE_ADMIN');
 insert into authorities (username, authority) values ('admin','ROLE_USER');
-
+*/
 
 
 /* custom schema */
 
-/*
+
 CREATE TABLE users (
   name VARCHAR(50) NOT NULL,
   email VARCHAR(50) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE authorities (
   FOREIGN KEY (email) REFERENCES users(email)
 );
 
-CREATE UNIQUE INDEX ix_auth_email on authorities (email,authority);*/
+CREATE UNIQUE INDEX ix_auth_email on authorities (email,authority);
 
 -- User user@email.pass/pass
 /*
@@ -54,7 +54,7 @@ INSERT INTO bael_users (name, email, password, enabled)
     '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.AQubh4a',
     1);  */
 
-/*
+
 INSERT INTO users (name, email, password, enabled)
   values ('user',
     'user@email.com',
@@ -62,7 +62,7 @@ INSERT INTO users (name, email, password, enabled)
     1);
 
 INSERT INTO authorities (email, authority)
-  values ('user@email.com', 'ROLE_USER');  */
+  values ('user@email.com', 'ROLE_USER');  
 
 /*     End    */
 
