@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.telusko.domain.AppUser;
@@ -21,8 +22,8 @@ public class CustomAuthenticationProvider  implements AuthenticationProvider{
 	UserRepo userRepo;
 	
 	@Autowired
-	BCryptPasswordEncoder bCryptPasswordEncoder;
-
+	PasswordEncoder passwordEncoder;
+	
 	/*@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
@@ -56,7 +57,7 @@ public class CustomAuthenticationProvider  implements AuthenticationProvider{
 		if(user == null ) {
 			throw new UsernameNotFoundException(token.getName());
 		}
-		if(!bCryptPasswordEncoder.matches(token.getCredentials().toString(),user.getPassword())
+		if(!passwordEncoder.matches(token.getCredentials().toString(),user.getPassword())
 				|| !token.getMake().equalsIgnoreCase("subaru")) {
 			throw new BadCredentialsException("bad credentials");
 		}

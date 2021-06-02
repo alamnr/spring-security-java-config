@@ -36,7 +36,9 @@ public class SpringApplicationTestConfig {
 	@Bean
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+		
 		return builder.setType(EmbeddedDatabaseType.H2).addScript("classpath:init.sql").build();
+		//return builder.setType(EmbeddedDatabaseType.H2).build();
 		
 	}
 	
@@ -47,6 +49,7 @@ public class SpringApplicationTestConfig {
 		adapter.setGenerateDdl(true);
 		
 		Properties jpapProperties = new Properties();
+		//jpapProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 		jpapProperties.setProperty("hibernate.hbm2ddl.auto", "update");
 		jpapProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 		

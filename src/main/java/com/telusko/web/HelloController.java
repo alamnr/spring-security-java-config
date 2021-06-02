@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.telusko.domain.AppUser;
+import com.telusko.domain.JdbcUserRepo;
 import com.telusko.domain.UserRepo;
 
 @Controller
@@ -34,7 +36,10 @@ public class HelloController {
 	UserRepo userRepo;
 	
 	@Autowired
-	BCryptPasswordEncoder bCryptPasswordEncoder;
+	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	JdbcUserRepo jdbcUserRepo;
 
 	@RequestMapping("/")
 	public String home() {
@@ -48,12 +53,22 @@ public class HelloController {
 		return "register";
 	}
 	
+	@RequestMapping(value =  "/users", method = RequestMethod.GET)
+	public ModelAndView showUsers() {
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("users");
+		mv.addObject("users", jdbcUserRepo.findAll());
+	
+		return mv;
+	}
+	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	
 	public String register(@ModelAttribute AppUser user) {
 		
 		user.setRole("USER");
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setPassword(passwordEncoder.encode(user.getPassword()));		
 		userRepo.save(user);
 		
 		Authentication auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),AuthorityUtils.createAuthorityList(user.getRole()));

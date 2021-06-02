@@ -1,5 +1,7 @@
 package com.telusko.web.java.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +11,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -27,25 +32,31 @@ import com.telusko.spring.security.CustomUserDetailService;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-	CustomUserDetailService customUserDetailService;
+	DataSource dataSource;
 	
 	@Autowired
-	CustomAuthenticationProvider customAuthenticationProvider;
-		
+	PasswordEncoder passwordEncoder;
+	
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		/* auth
-		    .inMemoryAuthentication()
-		        .withUser("user").password(passwordEncoder().encode("pass")).roles("USER")
-				.and().withUser("admin").password(passwordEncoder().encode("pass")).roles("USER","ADMIN");*/
-		/*auth.userDetailsService(customUserDetailService);*/
-		auth.authenticationProvider(customAuthenticationProvider);
+		
+		auth.jdbcAuthentication().dataSource(dataSource)
+		.withDefaultSchema()
+		.withUser(User.withUsername("user").password(passwordEncoder.encode("pass")).roles("USER"))
+		.withUser(User.withUsername("admin").password(passwordEncoder.encode("pass")).roles("ADMIN"));
+		/* custom schema */
+		/*.usersByUsernameQuery("select email,password,enabled "
+		        + "from users "
+		        + "where email = ?")
+		      .authoritiesByUsernameQuery("select email,authority "
+		        + "from authorities "
+		        + "where email = ?");*/
 		
     }
 	
-	/*protected void configure(HttpSecurity http) throws Exception { 
+	protected void configure(HttpSecurity http) throws Exception { 
 		
 	    http.authorizeRequests()
-	    	.antMatchers("/static/**", "/about","/","/register").permitAll()
+	    	.antMatchers("/static/**", "/about","/","/register","/users").permitAll()
 	    	.antMatchers("/ghap").hasAnyRole("USER")
 	    	.antMatchers("/secure","/add").hasRole("ADMIN")
 	    	.anyRequest().authenticated()
@@ -55,84 +66,19 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	    	
 	    	//.and().formLogin().permitAll()
 	    	
-	    	//.and().logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout=true").permitAll();
+	    	//.and().logout().logoutUrl("/logout").permitAll();
 	    	
 	    	.and().formLogin().loginPage("/login").loginProcessingUrl("/login").usernameParameter("custom_username")
-	    	.passwordParameter("custom_password").defaultSuccessUrl("/", true).failureUrl("/login?error=true").permitAll()	
+			.passwordParameter("custom_password").defaultSuccessUrl("/", true).failureUrl("/login?error=true").permitAll()	
 	    	
-	    	.and().logout().deleteCookies("JSESSIONID").invalidateHttpSession(true).logoutUrl("/logout")
-	    	.logoutSuccessUrl("/login?logout=true").permitAll();
-	    
-	        //.and().csrf().disable();
-	    
-		
-	}*/
-	
-	protected void configure(HttpSecurity http) throws Exception { 
-		
-		/*  
-		to add custom filter follow this link 
-		https://stackoverflow.com/questions/58995870/why-do-we-need-to-call-http-addfilterbefore-method-in-spring-security-configur 
-		https://stackoverflow.com/questions/24684806/how-to-define-a-custom-authenticationentrypoint-without-xml-configuration
-		*/
-		
-		
-	    http.addFilterAt(customFormLoginFilter(),CustomAuthenticationFilter.class)
-	    	.authorizeRequests()
-	    	.antMatchers("/ghap").hasAnyRole("USER")
-	    	.antMatchers("/secure","/add").hasRole("ADMIN")
-	    	.antMatchers("/static/**", "/about","/","/register","/login").permitAll()
-	    	.anyRequest().authenticated()
-	    	
-	    	.and().exceptionHandling().accessDeniedPage("/WEB-INF/jsp/accessDenied.jsp")
-	    	.authenticationEntryPoint(loginEntryPoint())
-	 
-	    		
-	    	.and().logout().deleteCookies("JSESSIONID").invalidateHttpSession(true).logoutUrl("/logout")
+	    	.and().logout().deleteCookies("JSESSIONID").invalidateHttpSession(true).logoutUrl("/logout")	    	
 	    	.logoutSuccessUrl("/login?logout=true").permitAll();
 	    
 	        //.and().csrf().disable();
 	    
 		
 	}
-	
-	
-	// Bean for Custom Authentication Token and Filter configuration  
-	
-	@Bean
-	public LoginUrlAuthenticationEntryPoint loginEntryPoint() {
-		return new LoginUrlAuthenticationEntryPoint("/login");
-	}
-	
-	
-	@Bean 
-	public CustomAuthenticationFilter customFormLoginFilter() throws Exception {
-		CustomAuthenticationFilter obj = new CustomAuthenticationFilter();
-		obj.setFilterProcessesUrl("/dologin");
-		obj.setAuthenticationManager(super.authenticationManager());
-		obj.setUsernameParameter("custom_username");
-		obj.setPasswordParameter("custom_password");
-		obj.setAuthenticationSuccessHandler(authsuccessHandler());
-		obj.setAuthenticationFailureHandler(authFailureHandler());
-		
-		return obj;
-	}
-	
-	@Bean 
-	public SavedRequestAwareAuthenticationSuccessHandler authsuccessHandler() {
-		SavedRequestAwareAuthenticationSuccessHandler obj = new SavedRequestAwareAuthenticationSuccessHandler();
-		obj.setDefaultTargetUrl("/");
-		return obj;
-	}
-	
-	
-	@Bean 
-	public SimpleUrlAuthenticationFailureHandler authFailureHandler() {
-		SimpleUrlAuthenticationFailureHandler obj = new SimpleUrlAuthenticationFailureHandler();
-		obj.setDefaultFailureUrl("/login?error=true");
-		return obj;
-	}
-	
+
 	
 }
 
