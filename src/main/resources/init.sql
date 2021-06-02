@@ -5,7 +5,7 @@ drop table if exists authorities cascade;
 
 /* default schema */
 
-/*
+
 create table users(
 	username varchar_ignorecase(50) not null primary key,
 	password varchar_ignorecase(50) not null,
@@ -24,7 +24,7 @@ insert into users (username,password,enabled) values ('admin','pass',1);
 insert into authorities (username, authority) values ('user','ROLE_USER');
 insert into authorities (username, authority) values ('admin','ROLE_ADMIN');
 insert into authorities (username, authority) values ('admin','ROLE_USER');
-*/
+
 
 
 /* custom schema */
